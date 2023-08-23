@@ -11,7 +11,7 @@ const imageSchema = new Schema({
         ref: 'User',
     },
 
-    // 이미지 파일경로 (파일명은 이미지 해시값으로)
+    // 이미지 해시값 (파일명)
     hash: {
         type: String,
         required: true,
