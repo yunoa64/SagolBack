@@ -11,11 +11,23 @@ const imageSchema = new Schema({
         ref: 'User',
     },
 
-    // 이미지 해시값 (파일명)
+    // 이미지 해시값
     hash: {
         type: String,
         required: true,
-        unique: true
+        unique: true,
+    },
+
+    // 이미지 대체텍스트
+    altText: {
+        type: String,
+        required: true,
+    },
+
+    // 이미지의 tf-idf vector (json)
+    vector: {
+        type: String,
+        required: true,
     }
 });
 
