@@ -1,8 +1,9 @@
 const express = require('express');
 const multer = require('multer');
-const Images = require('../schemas/images');
-const Pairs = require('../schemas/pair');
+const Image = require('../schemas/images');
+const Pair = require('../schemas/pair');
 const path = require('path');
+const fs = require('fs');
 
 const router = express.Router();
 
@@ -41,25 +42,57 @@ const upload = multer({
     limits: { fileSize: 5 * 1024 * 1024 },
 });
 
+// 시나리오 1: 이미지 업로드
+
 router.post('/upload', upload.single('filename'), (req, res) => {
-    try {
-        console.log(req.file);
-        res.status(200).send("upload complete");
-    } catch (err) {
-        console.log(err);
+    // TODO: 이미지 해시값 검사 기능 구현 (임시로 파일명 사용해서 검사기능 구현해보기)
+    // TODO: 해시값 구하는 함수 구현하기 (프론트엔드와 동일한 알고리즘으로)
+    if (req.file.originalname == req.body.hash) {
+        console.log("해시값 검사 통과");
+    } else {
+        console.log("해시값 검사 실패");
         res.status(500).json({
-            error: err
-        })
+            error: "해시값 검사 실패"
+        })  
     }
 
-    // TODO: 이미지 해시값 검사 기능 구현
+    var datatest = fs.readFile("public/images"+req.file.originalname, function(error, data) {
+        console.log(data);
+    })
 
-    // TODO: AI 서버에서 이미지 AltText 받아오기
-        
+    // TODO: AI 서버에서 이미지 AltText, tf-idf vector 받아오기, files에 들어갈 값이 무엇인가?
+    const imgInfos = axios.get("http://172.16.162.72:8890/getAltText", {
+        params: {data: req.body.hash, files: ""}
+    })
+
     // TODO: 파일 삭제(?)
-    // TODO: id값과 hash값을 DB에 추가
+
+    // TODO: 이미지의 해시값과 AltText, vector를 DB에 추가
+    try {
+        const image = Image.create({
+            id: imgInfos.Id,
+            hash: imgInfos.Hash,
+            description: imgInfos.Description,
+            tokenizedvector: imgInfos.TokenizedVector,
+        });
+    } catch (err) {
+        res.status(500).json({
+            error: "사진 업로드 실패"
+        })  
+    }
+
+    
+    // 프론트엔드에 해시값과 대체텍스트 리턴
+
+    res.status(200).json({
+        msg: "사진 업로드 성공",
+        hash: imgInfos.Hash,
+        description: imgInfos.Description,
+    });
 
 });
+
+
 
 // (업로드된) 이미지 가져오기, 파일명은 이미지의 파일명(public/images 안에 있는 이미지 참조, 추후 파일명은 해시값으로 변경되어야 함)
 router.get('/images/:img', async (req, res) => {
@@ -74,15 +107,22 @@ router.get('/images/:img', async (req, res) => {
     }
 })
 
-// 쿼리문을 줬을 때 사진 검색하기
+// 시나리오 2: 쿼리문을 줬을 때 사진 검색하기
 router.get('/search', async (req, res) => {
     try {
+        // 사용자 id를 이용해 해당 사용자가 가지고 있는 이미지들을 모두 가져옴
+        const pairs = Image.find({id: "hcail"});
+        console.log(pairs);
+        
         // TODO: AI 서버의 getBestPictures API를 호출해서 검색된 사진의 해시값을 반환하는 기능 구현
-            // const selectedPicture = await axios.get('req.body.tfidf, req.body.query')
-        // TODO: AI 서버에서 받은 사진의 해시값을 리턴
-            // res.status(200).send({ hash: selectedPicture.hash })
-        res.status(200).send("사진 검색하기");
-        console.log("run getBestPicture");
+        const selectedPicture = axios.get("http://172.16.162.72:8890/getBestPictures", {
+            params: {userText: req.params.userText, data: pairs}
+        });
+
+        // 인공지능 서버에서 받은 해시값을 프론트엔드에 리턴
+        res.status(200).json({
+            hash: selectedPictures.Hash,
+        })
     } catch (err) {
         console.log(err);
         res.status(500).json({
@@ -97,12 +137,21 @@ router.get('/getAlt', async(req, res) => {
         // TODO: req.body.path값을 AI 서버에 전달해 tokenizedvector와 description 받아오기
             // const res = await axios.get('URI', {path: req.body.path});
         // 이미지의 id (req.body.id)와 req.body.path, AI 서버에서 받은 tokenizedvector와 description을 pair로 DB에 저장하기
-            // const pair = await Pairs.create({
-            //     id: res.body.id,
-            //     hash: res.body.hash,
-            //     description: res.body.description,
-            //     tokenizedvector: res.body.tokenizedvector,
-            // })
+        const pair = await Image.create({
+            // id: "res.body.id",
+            id: "hcail",
+            hash: "res.by.hash",
+            description: "res.body.description",
+            tokenizedvector: "res.body.tokenizedvector",
+            // id: res.body.id,
+            // hash: res.body.hash,
+            // description: res.body.description,
+            // tokenizedvector: res.body.tokenizedvector,
+        })
+
+        const pairs = await Image.find({id: "hcail"});
+
+        console.log(pairs);
 
         res.status(200).send("사진 대체텍스트 가져오기");
         console.log("run getAltText");

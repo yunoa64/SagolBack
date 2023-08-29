@@ -6,7 +6,8 @@ const { Types: { ObjectId } } = Schema;
 const imageSchema = new Schema({
     // 이미지 업로드한 사용자 고유값(id)
     id: {
-        type: ObjectId,
+        // type: ObjectId,
+        type: String,
         required: true,
         ref: 'User',
     },
@@ -19,13 +20,13 @@ const imageSchema = new Schema({
     },
 
     // 이미지 대체텍스트
-    altText: {
+    description: {
         type: String,
         required: true,
     },
 
     // 이미지의 tf-idf vector (json)
-    vector: {
+    tokenizedvector: {
         type: String,
         required: true,
     }

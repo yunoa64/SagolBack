@@ -4,11 +4,11 @@ const { Schema } = mongoose;
 const { Types: { ObjectId } } = Schema;
 
 const pairSchema = new Schema({
-    id: {
-        type: ObjectId,
-        required: true,
-        ref: 'User',
-    },
+    // id: {
+    //     type: ObjectId,
+    //     required: true,
+    //     ref: 'User',
+    // },
 
     hash: {
         type: String,
