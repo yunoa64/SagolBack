@@ -77,25 +77,13 @@ router.post('/upload', upload.single('filename'), async (req, res) => {
     formData.append("Id", "Sagol");
     formData.append("Hash", req.body.hash);
 
-
-    // {Id: "Sagol", Hash: "21123dasdasd12e"};
-
     // TODO: AI 서버에서 이미지 AltText 받아오기
     const imgInfos = await axios.post("http://172.16.162.72:8890/getAltText", formData, { headers: { 'Content-Type': 'multipart/form-data' }, }).then(response => {
-        return response;
+        // console.log(response.data[0]);
+        return response.data[0];
     })
 
     console.log(imgInfos);
-    console.log(imgInfos.Hash);
-    console.log(imgInfos.Description);
-    console.log(imgInfos.Id);
-
-    const transFormData = new FormData();
-    transFormData.append("Description", imgInfos.Description);
-
-    const translate = await axios.post("http://172.16.162.72:8890/translate", transFormData, { headers: { 'Content-Type': 'multipart/form-data' }, }).then(response => {
-        return response.data;
-    })
 
     // TODO: 파일 삭제(?)
 
@@ -104,7 +92,7 @@ router.post('/upload', upload.single('filename'), async (req, res) => {
         const image = Image.create({
             Id: imgInfos.Id,
             Hash: imgInfos.Hash,
-            Description: translate,
+            Description: imgInfos.Description,
             // Tokenizedvector: "vector1",
         });
     } catch (err) {

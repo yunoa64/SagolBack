@@ -9,7 +9,7 @@ const imageSchema = new Schema({
         // type: ObjectId,
         type: String,
         required: true,
-        ref: 'User',
+        // ref: 'User',
     },
 
     // 이미지 해시값
