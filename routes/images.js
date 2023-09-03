@@ -141,13 +141,12 @@ router.get('/search', async (req, res) => {
         
         // TODO: AI 서버의 getBestPictures API를 호출해서 검색된 사진의 해시값을 반환하는 기능 구현
         const selectedPicture = await axios.post("http://172.16.162.72:8890/getBestPictures", formData, { headers: { 'Content-Type': 'multipart/form-data' }, }).then(response => {
-            console.log(response);
+            return response;
         });
 
         // 인공지능 서버에서 받은 해시값을 프론트엔드에 리턴
         res.status(200).json({
-            "test": "test1",
-            // hash: selectedPictures.Hash,
+            hash: selectedPicture.data,
         })
     } catch (err) {
         console.log(err);
@@ -158,7 +157,7 @@ router.get('/search', async (req, res) => {
 })
 
 // 이미지의 대체텍스트 가져오기 getAltText
-// router.get('/getAlt', async(req, res) => {
+// router.get('/getAlt', async (req, res) => {
 //     try {
 //         // TODO: req.body.path값을 AI 서버에 전달해 tokenizedvector와 description 받아오기
 //             // const res = await axios.get('URI', {path: req.body.path});
