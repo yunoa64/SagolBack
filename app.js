@@ -38,7 +38,7 @@ app.use((err, req, res, next) => {
     res.render('error');
 });
 
-app.listen(app.get('port'), "192.168.0.95", () => {
+app.listen(app.get('port'), "192.168.0.30", () => {
     console.log(app.get('port'), '번 포트에서 대기 중');
 });
 

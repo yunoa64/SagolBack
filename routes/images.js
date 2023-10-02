@@ -68,19 +68,15 @@ router.post('/upload', upload.single('filename'), async (req, res) => {
         res.end();
     }
 
-    // var datatest = fs.readFile("public/images"+req.file.originalname, function(error, data) {
-    //     console.log(data);
-    // })
-
     const formData = new FormData();
     formData.append("Image", fs.createReadStream('public/images/' + req.file.originalname));
     formData.append("Id", "Sagol");
     formData.append("Hash", req.body.hash);
 
-    // TODO: AI 서버에서 이미지 AltText 받아오기
+    // AI 서버에서 이미지 AltText 받아오기
     const imgInfos = await axios.post("http://172.16.162.72:8890/getAltText", formData, { headers: { 'Content-Type': 'multipart/form-data' }, }).then(response => {
-        // console.log(response.data[0]);
-        return response.data[0];
+        return response;
+        // return response.data[0];
     })
 
     console.log(imgInfos);
@@ -89,27 +85,27 @@ router.post('/upload', upload.single('filename'), async (req, res) => {
 
     // 이미지의 해시값과 AltText, vector를 DB에 추가
     try {
-        const image = Image.create({
-            Id: imgInfos.Id,
-            Hash: imgInfos.Hash,
-            Description: imgInfos.Description,
-            // Tokenizedvector: "vector1",
+        // const image = Image.create({
+        //     Id: imgInfos.Id,
+        //     Hash: imgInfos.Hash,
+        //     Description: imgInfos.Description,
+        //     // Tokenizedvector: "vector1",
+        // });
+
+        res.status(200).json({
+            msg: "사진 업로드 성공",
+            hash: imgInfos.Hash,
+            description: imgInfos.Description,
         });
     } catch (err) {
+        console.log(err);
         res.status(500).json({
-            error: "사진 업로드 실패"
+            error: err
         })  
     }
 
     
     // 프론트엔드에 해시값과 대체텍스트 리턴
-
-    res.status(200).json({
-        msg: "사진 업로드 성공",
-        hash: imgInfos.Hash,
-        description: imgInfos.Description,
-    });
-
 });
 
 
