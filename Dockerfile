@@ -25,4 +25,8 @@ COPY . .
 EXPOSE 3002
 
 # Run the application.
+<<<<<<< HEAD
 CMD npm start
+=======
+CMD npm start
+>>>>>>> fbf9a28d43be32d1973ee717eabe977c3a4096fa

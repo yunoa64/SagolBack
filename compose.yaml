@@ -29,3 +29,4 @@ services:
       - type: bind
         source: ./data/db
         target: /data/db
+

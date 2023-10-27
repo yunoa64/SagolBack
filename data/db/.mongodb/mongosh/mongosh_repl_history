@@ -1,0 +1,3 @@
+exit
+db.images.find()
+use nodejs

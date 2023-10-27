@@ -36,12 +36,15 @@ const router = express.Router();
 // 테스트
 router.post('/test', (req, res) => {
     console.log(req);
+    // console.log(req);
 
     const image = Image.create({
         Id: 2,
         Hash: 4,
         Description: "test1",
     });
+
+    console.log(image);
 
     res.status(200).json({
         msg: "success"
@@ -69,6 +72,9 @@ router.post('/upload', upload.single('filename'), async (req, res) => {
     try {
         if (req.file.originalname == req.body.hash) {
             console.log("해시값 검사 통과");
+            res.status(200).json({
+                msg: "success"
+            })
         } else {
             console.log("해시값 검사 실패");
             res.status(500).json({
