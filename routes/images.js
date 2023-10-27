@@ -33,6 +33,21 @@ const router = express.Router();
 
 // 이미지 업로드 (multer 이용해 구현)
 
+// 테스트
+router.post('/test', (req, res) => {
+    console.log(req);
+
+    const image = Image.create({
+        Id: 2,
+        Hash: 4,
+        Description: "test1",
+    });
+
+    res.status(200).json({
+        msg: "success"
+    });
+})
+
 const upload = multer({
     storage: multer.diskStorage({
       destination(req, file, done) {
@@ -85,12 +100,12 @@ router.post('/upload', upload.single('filename'), async (req, res) => {
 
     // 이미지의 해시값과 AltText, vector를 DB에 추가
     try {
-        // const image = Image.create({
-        //     Id: imgInfos.Id,
-        //     Hash: imgInfos.Hash,
-        //     Description: imgInfos.Description,
-        //     // Tokenizedvector: "vector1",
-        // });
+        const image = Image.create({
+            Id: imgInfos.Id,
+            Hash: imgInfos.Hash,
+            Description: imgInfos.Description,
+            // Tokenizedvector: "vector1",
+        });
 
         res.status(200).json({
             msg: "사진 업로드 성공",

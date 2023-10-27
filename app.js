@@ -38,8 +38,6 @@ app.use((err, req, res, next) => {
     res.render('error');
 });
 
-app.listen(app.get('port'), "192.168.0.30", () => {
+app.listen(app.get('port'), "0.0.0.0", () => {
     console.log(app.get('port'), '번 포트에서 대기 중');
 });
-
-// TODO: IP 명시하기
