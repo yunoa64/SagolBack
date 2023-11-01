@@ -6,7 +6,7 @@ const router = express.Router();
 router.get('/', async (req, res, next) => {
     try {
         res.status(201).send("connected");
-        console.log('aaaaaa');
+        console.log('connected');
     } catch (err) {
         console.error(err);
         next(err);
